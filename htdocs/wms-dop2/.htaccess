@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule wms-dop?(.*) /cgi-bin/mapserv?map=/home/sig/maps/pemda/pbb/dop.map&$1

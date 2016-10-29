@@ -1,0 +1,130 @@
+#
+# File: lmic_wms.map
+# Reprojects a WMS service from native (UTM-15N) into Web Mercator
+# for integrating with multiple datasets.
+#
+
+MAP
+    SIZE 800 650
+    NAME dop
+    #SIZE 100 50
+    STATUS ON
+
+    INCLUDE "./inc/init_extent.inc" 
+    INCLUDE "./inc/debug.inc"
+    UNITS METERS
+
+    INCLUDE "../../geomoose_globals.map"
+    WEB
+        INCLUDE "../../temp_directory.map"
+        METADATA
+            'ows_title' 'Reprojection service for Dat Objek Pajak WMS layers'
+            'ows_srs' 'EPSG:26915 EPSG:4326 EPSG:900913 EPSG:3857'
+            'ows_enable_request' '*'
+            'ows_onlineresource' 'http://sig.tangselkota.org/wms-dop'
+            'wms_feature_info_mime_type' 'text/html'            
+            #'ows_enable_request' '*'
+        END
+    END
+
+    PROJECTION
+        "init=epsg:4326"
+    END
+
+    LAYER
+        NAME bumi
+        INCLUDE "./inc/connection.inc"
+        DATA "geom FROM (SELECT a.*, a.kd_propinsi||a.kd_dati2||a.kd_kecamatan||a.kd_kelurahan||
+                        a.kd_blok||a.no_urut||a.kd_jns_op as nop, b.jalan_op, c.nm_wp, c.jalan_wp, b.blok_kav_no_op, b.rt_op, b.rw_op,
+                        b.total_luas_bumi, b.total_luas_bng, b.njop_bumi, b.njop_bng, d.nm_kelurahan, e.nm_kecamatan
+                 FROM sig.sig_bumi a
+                 LEFT JOIN pbb.dat_objek_pajak b
+                    ON  a.kd_propinsi  = b.kd_propinsi AND
+                        a.kd_dati2     = b.kd_dati2 AND
+                        a.kd_kecamatan = b.kd_kecamatan AND
+                        a.kd_kelurahan = b.kd_kelurahan AND
+                        a.kd_blok      = b.kd_blok AND
+                        a.no_urut      = b.no_urut AND
+                        a.kd_jns_op    = b.kd_jns_op
+                 LEFT JOIN pbb.dat_subjek_pajak c
+                    ON b.subjek_pajak_id = c.subjek_pajak_id
+                 LEFT JOIN sig.sig_kelurahan d
+                    ON  a.kd_propinsi  = d.kd_propinsi AND
+                        a.kd_dati2     = d.kd_dati2 AND
+                        a.kd_kecamatan = d.kd_kecamatan AND
+                        a.kd_kelurahan = d.kd_kelurahan
+                 LEFT JOIN sig.sig_kecamatan e
+                    ON  a.kd_propinsi  = e.kd_propinsi AND
+                        a.kd_dati2     = e.kd_dati2 AND
+                        a.kd_kecamatan = e.kd_kecamatan
+                    
+                 ) as bumi using unique gid using srid=4326"
+        STATUS ON
+        TYPE POLYGON
+        LABELITEM 'no_urut'
+        LABELCACHE ON
+        LABELMAXSCALE 2000
+        
+        CLASS
+            NAME 'bumi'
+            STYLE
+              SIZE 1
+              COLOR -1 -1 -1
+              OUTLINECOLOR 0 255 0
+              MAXSCALEDENOM 5000
+            END
+            
+            LABEL
+              TYPE TRUETYPE
+              FONT vera_sans
+              SIZE 8
+              ANTIALIAS TRUE
+              COLOR 0 0 0
+              OUTLINECOLOR 0 255 0
+              BUFFER 4
+              MINFEATURESIZE auto
+              PARTIALS FALSE
+              POSITION cc
+            END            
+        END
+        METADATA
+            # drill-down identify service record.
+            'identify_record'	'templates/bumi_identify.html'
+
+            # query.php / "Search Parcels" functionality.
+            'itemquery'	'templates/bumi_search_result.html'
+            'itemquery-filter'	'/.*[qstring].*/i' 
+            #'qstring_validation_pattern' '.'
+            
+            # Feature reports are stored in the conf/feature_report directory.
+            'feature_report' 'bumi.xml'
+
+            'select_record'	'templates/bumi_select.html'
+            'select_header' 'templates/bumi_select_header.html'
+            'popups' 'bumi_popup.html'
+        END
+        TOLERANCE 0
+
+        # this is required for WMS popups.
+        TEMPLATE "bumi_popup.html"        
+    END
+    
+    LAYER
+        NAME bangunan
+        INCLUDE "./inc/connection.inc"
+        DATA "geom from sig.sig_bng using unique gid using srid=4326"
+        STATUS ON
+        TYPE POLYGON
+        
+        CLASS
+            NAME 'bangunan'
+            STYLE
+              SIZE 1
+              COLOR -1 -1 -1
+              OUTLINECOLOR 255 125 125
+              MAXSCALEDENOM 4000
+            END
+        END
+    END       
+
+END

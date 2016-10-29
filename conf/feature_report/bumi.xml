@@ -1,0 +1,24 @@
+<feature-report>
+	<!-- query informtion -->
+	<query item="gid" string="%qstring%"/>
+
+	<!-- This is the template -->
+	<template>bumi_template.pdf</template>
+
+	<!-- this is the location of the map in the template -->
+	<map x="1.5" y="2.18" w="6" h="3.68"/>
+
+	<!-- This is a list of where the fields are to be printed on the template -->
+	<fields>
+		<field x="1.25" y="6.55" src="%nop%" title="NOP: "/>
+		<field x="1.25" y="6.75" src="%jalan_op%" title="Alamat: "/>
+		<field x="1.25" y="6.95" src="%blok_kav_no_op%" title="Blok/Kav/No: "/>
+		<field x="4.5"  y="6.95" src="%rt_op%/%rw_op%" title="RT/RW: "/>
+    <field x="1.25" y="7.15" src="%nm_kelurahan%" title="Kelurahan: "/>
+		<field x="1.25" y="7.35" src="%nm_kecamatan%" title="Kecamatan: "/>
+		<field x="1.25" y="7.55" src="%total_luas_bumi% m2" title="Luas Bumi:" format='%n'/>
+		<field x="1.25" y="7.75" src="%total_luas_bng% m2" title="Luas Bangunan:" format='%n'/>
+		<field x="1.25" y="7.95" src="Rp. %njop_bumi%" title="NJOP Bumi:" format='%n'/>
+		<field x="1.25" y="8.15" src="Rp. %njop_bng%" title="NJOP Bangunan:" format='%n'/>
+	</fields>
+</feature-report>

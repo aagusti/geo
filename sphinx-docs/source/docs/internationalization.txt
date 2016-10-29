@@ -1,0 +1,18 @@
+Notes on Internationalization
+=============================
+
+Changing the Encoding
+---------------------
+
+Changing the input and output encodings in GeoMOOSE is done via the local settings.
+
+In the ``conf`` directory open the ``local_settings.ini`` file and add the following lines to change GeoMOOSE to UTF8::
+
+	[encodings]
+	input-encoding=UTF-8
+	output-encoding=UTF-8
+
+What Has Been Tested
+--------------------
+
+This has been only really tested with UTF-8 and Latin1 encodings.  None of the core team speaks a non-Romanitic-influenced language.

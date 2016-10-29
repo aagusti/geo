@@ -1,0 +1,114 @@
+Format: 1.52
+
+
+# You can add a title and sub-title to your menu like this:
+# Title: [project name]
+# SubTitle: [subtitle]
+
+# You can add a footer to your documentation like this:
+# Footer: [text]
+# If you want to add a copyright notice, this would be the place to do it.
+
+# You can add a timestamp to your documentation like one of these:
+# Timestamp: Generated on month day, year
+# Timestamp: Updated mm/dd/yyyy
+# Timestamp: Last updated mon day
+#
+#   m     - One or two digit month.  January is "1"
+#   mm    - Always two digit month.  January is "01"
+#   mon   - Short month word.  January is "Jan"
+#   month - Long month word.  January is "January"
+#   d     - One or two digit day.  1 is "1"
+#   dd    - Always two digit day.  1 is "01"
+#   day   - Day with letter extension.  1 is "1st"
+#   yy    - Two digit year.  2006 is "06"
+#   yyyy  - Four digit year.  2006 is "2006"
+#   year  - Four digit year.  2006 is "2006"
+
+
+# --------------------------------------------------------------------------
+# 
+# Cut and paste the lines below to change the order in which your files
+# appear on the menu.  Don't worry about adding or removing files, Natural
+# Docs will take care of that.
+# 
+# You can further organize the menu by grouping the entries.  Add a
+# "Group: [name] {" line to start a group, and add a "}" to end it.
+# 
+# You can add text and web links to the menu by adding "Text: [text]" and
+# "Link: [name] ([URL])" lines, respectively.
+# 
+# The formatting and comments are auto-generated, so don't worry about
+# neatness when editing the file.  Natural Docs will clean it up the next
+# time it is run.  When working with groups, just deal with the braces and
+# forget about the indentation and comments.
+# 
+# --------------------------------------------------------------------------
+
+
+File: GeoMOOSE  (geomoose.js)
+
+Group: GeoMOOSE  {
+
+   File: Application  (GeoMOOSE/Application.js)
+
+   Group: Control  {
+
+      File: DeleteFeature  (GeoMOOSE/Control/DeleteFeature.js)
+      File: Measure  (GeoMOOSE/Control/Measure.js)
+      }  # Group: Control
+
+   Group: Dialog  {
+
+      File: AttributeEditor  (GeoMOOSE/Dialog/AttributeEditor.js)
+      File: Download  (GeoMOOSE/Dialog/Download.js)
+      File: Error  (GeoMOOSE/Dialog/Error.js)
+      }  # Group: Dialog
+
+   File: Layout.Default  (GeoMOOSE/Layout/Default.js)
+   File: MapSource  (GeoMOOSE/MapSource.js)
+
+   Group: MapSource  {
+
+      File: AGS  (GeoMOOSE/MapSource/AGS.js)
+      File: Google  (GeoMOOSE/MapSource/Google.js)
+      File: MapServer  (GeoMOOSE/MapSource/MapServer.js)
+      File: TMS  (GeoMOOSE/MapSource/TMS.js)
+      File: Vector  (GeoMOOSE/MapSource/Vector.js)
+      File: Vector.WFS  (GeoMOOSE/MapSource/Vector/WFS.js)
+      File: WMS  (GeoMOOSE/MapSource/WMS.js)
+      File: XYZ  (GeoMOOSE/MapSource/XYZ.js)
+      File: Yahoo  (GeoMOOSE/MapSource/Yahoo.js)
+      }  # Group: MapSource
+
+   File: ServiceInputTypes  (GeoMOOSE/ServiceInputTypes.js)
+   File: Tab  (GeoMOOSE/Tab.js)
+
+   Group: Tab  {
+
+      File: Catalog  (GeoMOOSE/Tab/Catalog.js)
+      File: Service  (GeoMOOSE/Tab/Service.js)
+      }  # Group: Tab
+
+   File: Tool  (GeoMOOSE/Tool.js)
+   File: Tool.MeasureArea  (GeoMOOSE/Tool/MeasureArea.js)
+
+   Group: UI  {
+
+      File: CoordinateDisplay  (GeoMOOSE/UI/CoordinateDisplay.js)
+      File: LinksBar  (GeoMOOSE/UI/LinksBar.js)
+      File: ScaleJumper  (GeoMOOSE/UI/ScaleJumper.js)
+      File: Toolbar  (GeoMOOSE/UI/Toolbar.js)
+      File: ZoomTo  (GeoMOOSE/UI/ZoomTo.js)
+      }  # Group: UI
+
+   }  # Group: GeoMOOSE
+
+Group: Index  {
+
+   Index: Everything
+   Class Index: Classes
+   Function Index: Functions
+   Variable Index: Variables
+   }  # Group: Index
+

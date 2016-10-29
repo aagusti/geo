@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteRule wms-dop/?(.*) /cgi-bin/mapserv?map=/home/aagusti/apps/geo/maps/pemda/pbb/dop.map&SERVICE=WMS&VERSION=1.1.1&LAYERS=bumi$1
+RewriteRule pbb-adm/?(.*) /cgi-bin/mapserv?MAP=/home/aagusti/apps/geo/maps/pemda/pbb/administratif.map&$1
+RewriteRule pbb-dop/?(.*) /cgi-bin/mapserv?map=/home/aagusti/apps/geo/maps/pemda/pbb/dop.map&SERVICE=WMS&VERSION=1.1.1$1

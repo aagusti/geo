@@ -1,0 +1,1638 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.1.23
+-- Dumped by pg_dump version 9.1.23
+-- Started on 2016-10-30 20:30:22
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 12 (class 2615 OID 27408)
+-- Name: pbb; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA pbb;
+
+
+--
+-- TOC entry 13 (class 2615 OID 27409)
+-- Name: sig; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA sig;
+
+
+--
+-- TOC entry 11 (class 2615 OID 27244)
+-- Name: topology; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA topology;
+
+
+--
+-- TOC entry 1 (class 3079 OID 11639)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 3313 (class 0 OID 0)
+-- Dependencies: 1
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- TOC entry 3 (class 3079 OID 27410)
+-- Dependencies: 14
+-- Name: address_standardizer; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS address_standardizer WITH SCHEMA public;
+
+
+--
+-- TOC entry 4 (class 3079 OID 27389)
+-- Dependencies: 14
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
+
+
+--
+-- TOC entry 3314 (class 0 OID 0)
+-- Dependencies: 4
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
+
+
+--
+-- TOC entry 5 (class 3079 OID 26127)
+-- Dependencies: 14
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- TOC entry 3315 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+--
+-- TOC entry 2 (class 3079 OID 27245)
+-- Dependencies: 5 11
+-- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
+
+
+--
+-- TOC entry 3316 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 1163 (class 1255 OID 27417)
+-- Dependencies: 14 1540
+-- Name: geomfromtext(text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION geomfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_GeomFromText($1)$_$;
+
+
+--
+-- TOC entry 1164 (class 1255 OID 27418)
+-- Dependencies: 1540 14
+-- Name: geomfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION geomfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_GeomFromText($1, $2)$_$;
+
+
+--
+-- TOC entry 1171 (class 1255 OID 27419)
+-- Dependencies: 14
+-- Name: st_asbinary(text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION st_asbinary(text) RETURNS bytea
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT ST_AsBinary($1::geometry);$_$;
+
+
+--
+-- TOC entry 1172 (class 1255 OID 27420)
+-- Dependencies: 14
+-- Name: st_astext(bytea); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION st_astext(bytea) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT ST_AsText($1::geometry);$_$;
+
+
+SET search_path = pbb, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 189 (class 1259 OID 27421)
+-- Dependencies: 12
+-- Name: dat_nilai_individu; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_nilai_individu (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_blok character(3) NOT NULL,
+    no_urut character(4) NOT NULL,
+    kd_jns_op character(1) NOT NULL,
+    no_bng integer NOT NULL,
+    no_formulir_individu character(11),
+    nilai_individu double precision,
+    tgl_penilaian_individu date,
+    nip_penilai_individu character(18),
+    tgl_pemeriksaan_individu date,
+    nip_pemeriksa_individu character(18),
+    tgl_rekam_nilai_individu timestamp without time zone,
+    nip_perekam_individu character(18)
+);
+
+
+--
+-- TOC entry 190 (class 1259 OID 27424)
+-- Dependencies: 12
+-- Name: dat_nir; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_nir (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_znt character(2) NOT NULL,
+    thn_nir_znt character(4) NOT NULL,
+    kd_kanwil character(2),
+    kd_kantor character(2),
+    jns_dokumen character(1),
+    no_dokumen character(11),
+    nir double precision
+);
+
+
+--
+-- TOC entry 191 (class 1259 OID 27427)
+-- Dependencies: 3077 3078 12
+-- Name: dat_objek_pajak; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_objek_pajak (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_blok character(3) NOT NULL,
+    no_urut character(4) NOT NULL,
+    kd_jns_op character(1) NOT NULL,
+    subjek_pajak_id character(30),
+    no_formulir_spop character(11),
+    no_persil character varying(5),
+    jalan_op character varying(30),
+    blok_kav_no_op character varying(15),
+    rw_op character(2),
+    rt_op character(3),
+    kd_status_cabang integer,
+    kd_status_wp character(1) DEFAULT '1'::bpchar,
+    total_luas_bumi double precision,
+    total_luas_bng double precision,
+    njop_bumi double precision,
+    njop_bng double precision,
+    status_peta_op integer,
+    jns_transaksi_op character(1) DEFAULT '1'::bpchar,
+    tgl_pendataan_op date,
+    nip_pendata character(18),
+    tgl_pemeriksaan_op date,
+    nip_pemeriksa_op character(18),
+    tgl_perekaman_op timestamp without time zone,
+    nip_perekam_op character(18)
+);
+
+
+--
+-- TOC entry 192 (class 1259 OID 27432)
+-- Dependencies: 3079 12
+-- Name: dat_op_bangunan; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_op_bangunan (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_blok character(3) NOT NULL,
+    no_urut character(4) NOT NULL,
+    kd_jns_op character(1) NOT NULL,
+    no_bng integer NOT NULL,
+    kd_jpb character(2),
+    no_formulir_lspop character(11),
+    thn_dibangun_bng character(4),
+    thn_renovasi_bng character(4),
+    luas_bng double precision,
+    jml_lantai_bng integer,
+    kondisi_bng character(1),
+    jns_konstruksi_bng character(1),
+    jns_atap_bng character(1),
+    kd_dinding character(1),
+    kd_lantai character(1),
+    kd_langit_langit character(1),
+    nilai_sistem_bng double precision,
+    jns_transaksi_bng character(1) DEFAULT '1'::bpchar,
+    tgl_pendataan_bng date,
+    nip_pendata_bng character(18),
+    tgl_pemeriksaan_bng date,
+    nip_pemeriksa_bng character(18),
+    tgl_perekaman_bng timestamp without time zone,
+    nip_perekam_bng character(18)
+);
+
+
+--
+-- TOC entry 193 (class 1259 OID 27436)
+-- Dependencies: 3080 12
+-- Name: dat_op_bumi; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_op_bumi (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_blok character(3) NOT NULL,
+    no_urut character(4) NOT NULL,
+    kd_jns_op character(1) NOT NULL,
+    no_bumi integer NOT NULL,
+    kd_znt character(2),
+    luas_bumi double precision,
+    jns_bumi character(1) DEFAULT '1'::bpchar,
+    nilai_sistem_bumi double precision
+);
+
+
+--
+-- TOC entry 194 (class 1259 OID 27440)
+-- Dependencies: 3081 3082 12
+-- Name: dat_subjek_pajak; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_subjek_pajak (
+    subjek_pajak_id character(30) NOT NULL,
+    nm_wp character varying(30) DEFAULT 'PEMILIK'::character varying,
+    jalan_wp character varying(30),
+    blok_kav_no_wp character varying(15),
+    rw_wp character(2),
+    rt_wp character(3),
+    kelurahan_wp character varying(30),
+    kota_wp character varying(30),
+    kd_pos_wp character varying(5),
+    telp_wp character varying(20),
+    npwp character varying(15),
+    status_pekerjaan_wp character(1) DEFAULT '0'::bpchar,
+    email_wp character varying(64),
+    hp_wp character varying(16)
+);
+
+
+--
+-- TOC entry 195 (class 1259 OID 27445)
+-- Dependencies: 12
+-- Name: dat_znt; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE dat_znt (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_znt character(2) NOT NULL
+);
+
+
+--
+-- TOC entry 196 (class 1259 OID 27448)
+-- Dependencies: 3083 3084 3085 3086 3087 3088 3089 12
+-- Name: sppt; Type: TABLE; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sppt (
+    kd_propinsi character(2) NOT NULL,
+    kd_dati2 character(2) NOT NULL,
+    kd_kecamatan character(3) NOT NULL,
+    kd_kelurahan character(3) NOT NULL,
+    kd_blok character(3) NOT NULL,
+    no_urut character(4) NOT NULL,
+    kd_jns_op character(1) NOT NULL,
+    thn_pajak_sppt character(4) NOT NULL,
+    siklus_sppt integer NOT NULL,
+    kd_kanwil_bank character(2),
+    kd_kppbb_bank character(2),
+    kd_bank_tunggal character(2),
+    kd_bank_persepsi character(2),
+    kd_tp character(2) NOT NULL,
+    nm_wp_sppt character varying(30) NOT NULL,
+    jln_wp_sppt character varying(30) NOT NULL,
+    blok_kav_no_wp_sppt character varying(15),
+    rw_wp_sppt character(2),
+    rt_wp_sppt character(3),
+    kelurahan_wp_sppt character varying(30),
+    kota_wp_sppt character varying(30),
+    kd_pos_wp_sppt character varying(5),
+    npwp_sppt character varying(15),
+    no_persil_sppt character varying(5),
+    kd_kls_tanah character(3) DEFAULT 'XXX'::bpchar NOT NULL,
+    thn_awal_kls_tanah character(4) DEFAULT '1986'::bpchar NOT NULL,
+    kd_kls_bng character(3) DEFAULT 'XXX'::bpchar NOT NULL,
+    thn_awal_kls_bng character(4) DEFAULT '1986'::bpchar NOT NULL,
+    tgl_jatuh_tempo_sppt date NOT NULL,
+    luas_bumi_sppt double precision NOT NULL,
+    luas_bng_sppt double precision NOT NULL,
+    njop_bumi_sppt double precision NOT NULL,
+    njop_bng_sppt double precision NOT NULL,
+    njop_sppt double precision NOT NULL,
+    njoptkp_sppt integer NOT NULL,
+    njkp_sppt integer,
+    pbb_terhutang_sppt double precision NOT NULL,
+    faktor_pengurang_sppt double precision,
+    pbb_yg_harus_dibayar_sppt double precision NOT NULL,
+    status_pembayaran_sppt character(1) DEFAULT '0'::bpchar NOT NULL,
+    status_tagihan_sppt character(1) DEFAULT '0'::bpchar NOT NULL,
+    status_cetak_sppt character(1) DEFAULT '0'::bpchar NOT NULL,
+    tgl_terbit_sppt date NOT NULL,
+    tgl_cetak_sppt timestamp without time zone NOT NULL,
+    nip_pencetak_sppt character varying(18) NOT NULL,
+    kd_kanwil character varying(2),
+    kd_kantor character varying(2)
+);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 197 (class 1259 OID 27458)
+-- Dependencies: 14
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+--
+-- TOC entry 198 (class 1259 OID 27461)
+-- Dependencies: 14
+-- Name: alembic_ziggurat_foundations_version; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE alembic_ziggurat_foundations_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+--
+-- TOC entry 199 (class 1259 OID 27464)
+-- Dependencies: 14
+-- Name: external_identities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE external_identities (
+    external_id character varying(255) NOT NULL,
+    external_user_name character varying(255),
+    local_user_name character varying(50) NOT NULL,
+    provider_name character varying(50) NOT NULL,
+    access_token character varying(255),
+    alt_token character varying(255),
+    token_secret character varying(255)
+);
+
+
+--
+-- TOC entry 200 (class 1259 OID 27470)
+-- Dependencies: 14
+-- Name: groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE groups (
+    group_name character varying(128) NOT NULL,
+    description text,
+    member_count integer NOT NULL,
+    id integer NOT NULL
+);
+
+
+--
+-- TOC entry 201 (class 1259 OID 27476)
+-- Dependencies: 14 200
+-- Name: groups_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3317 (class 0 OID 0)
+-- Dependencies: 201
+-- Name: groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE groups_id_seq OWNED BY groups.id;
+
+
+--
+-- TOC entry 202 (class 1259 OID 27478)
+-- Dependencies: 3091 14
+-- Name: groups_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE groups_permissions (
+    perm_name character varying(30) NOT NULL,
+    group_id integer NOT NULL,
+    CONSTRAINT ck_groups_permissions_perm_name CHECK (((perm_name)::text = lower((perm_name)::text)))
+);
+
+
+--
+-- TOC entry 203 (class 1259 OID 27482)
+-- Dependencies: 3092 14
+-- Name: groups_resources_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE groups_resources_permissions (
+    resource_id integer NOT NULL,
+    perm_name character varying(50) NOT NULL,
+    group_id integer NOT NULL,
+    CONSTRAINT ck_groups_resources_permissions_perm_name CHECK (((perm_name)::text = lower((perm_name)::text)))
+);
+
+
+--
+-- TOC entry 204 (class 1259 OID 27486)
+-- Dependencies: 3093 14
+-- Name: resources; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE resources (
+    resource_id integer NOT NULL,
+    resource_name character varying(100) NOT NULL,
+    resource_type character varying(30) NOT NULL,
+    parent_id integer,
+    ordering integer DEFAULT 0 NOT NULL,
+    owner_user_id integer,
+    owner_group_id integer
+);
+
+
+--
+-- TOC entry 205 (class 1259 OID 27490)
+-- Dependencies: 14 204
+-- Name: resources_resource_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE resources_resource_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3318 (class 0 OID 0)
+-- Dependencies: 205
+-- Name: resources_resource_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE resources_resource_id_seq OWNED BY resources.resource_id;
+
+
+--
+-- TOC entry 206 (class 1259 OID 27492)
+-- Dependencies: 3095 3096 3097 14
+-- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE users (
+    id integer NOT NULL,
+    user_name character varying(30),
+    user_password character varying(256),
+    email character varying(100) NOT NULL,
+    status smallint NOT NULL,
+    security_code character varying(256),
+    last_login_date timestamp with time zone DEFAULT now(),
+    registered_date timestamp with time zone DEFAULT now(),
+    security_code_date timestamp without time zone DEFAULT '2000-01-01 01:01:00'::timestamp without time zone
+);
+
+
+--
+-- TOC entry 207 (class 1259 OID 27501)
+-- Dependencies: 14
+-- Name: users_groups; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE users_groups (
+    group_id integer NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+--
+-- TOC entry 208 (class 1259 OID 27504)
+-- Dependencies: 14 206
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3319 (class 0 OID 0)
+-- Dependencies: 208
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
+-- TOC entry 209 (class 1259 OID 27506)
+-- Dependencies: 3099 14
+-- Name: users_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE users_permissions (
+    perm_name character varying(30) NOT NULL,
+    user_id integer NOT NULL,
+    CONSTRAINT ck_user_permissions_perm_name CHECK (((perm_name)::text = lower((perm_name)::text)))
+);
+
+
+--
+-- TOC entry 210 (class 1259 OID 27510)
+-- Dependencies: 3100 14
+-- Name: users_resources_permissions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE users_resources_permissions (
+    resource_id integer NOT NULL,
+    perm_name character varying(50) NOT NULL,
+    user_id integer NOT NULL,
+    CONSTRAINT ck_users_resources_permissions_perm_name CHECK (((perm_name)::text = lower((perm_name)::text)))
+);
+
+
+SET search_path = sig, pg_catalog;
+
+--
+-- TOC entry 211 (class 1259 OID 27514)
+-- Dependencies: 1540 13
+-- Name: sig_bng; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_bng (
+    gid bigint NOT NULL,
+    kd_propinsi character(2),
+    kd_dati2 character(2),
+    kd_kecamatan character(3),
+    kd_kelurahan character(3),
+    kd_blok character(3),
+    no_urut character(4),
+    kd_jns_op character(1),
+    no_bng character(3),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 212 (class 1259 OID 27520)
+-- Dependencies: 13 211
+-- Name: sig_bg_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_bg_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3320 (class 0 OID 0)
+-- Dependencies: 212
+-- Name: sig_bg_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_bg_id_seq OWNED BY sig_bng.gid;
+
+
+--
+-- TOC entry 213 (class 1259 OID 27522)
+-- Dependencies: 1540 13
+-- Name: sig_blok; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_blok (
+    gid bigint NOT NULL,
+    kd_propinsi character(2),
+    kd_dati2 character(2),
+    kd_kecamatan character(3),
+    kd_kelurahan character(3),
+    kd_blok character(3),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 214 (class 1259 OID 27528)
+-- Dependencies: 213 13
+-- Name: sig_blok_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_blok_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3321 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: sig_blok_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_blok_id_seq OWNED BY sig_blok.gid;
+
+
+--
+-- TOC entry 215 (class 1259 OID 27530)
+-- Dependencies: 13 1540
+-- Name: sig_bumi; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_bumi (
+    gid bigint NOT NULL,
+    kd_propinsi character(2),
+    kd_dati2 character(2),
+    kd_kecamatan character(3),
+    kd_kelurahan character(3),
+    kd_blok character(3),
+    no_urut character(4),
+    kd_jns_op character(1),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 216 (class 1259 OID 27536)
+-- Dependencies: 1540 13
+-- Name: sig_dati2; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_dati2 (
+    id integer NOT NULL,
+    kd_propinsi character(2),
+    kd_dati2 character(2),
+    nm_dati2 character varying(50),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 217 (class 1259 OID 27542)
+-- Dependencies: 216 13
+-- Name: sig_dati2_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_dati2_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3322 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: sig_dati2_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_dati2_id_seq OWNED BY sig_dati2.id;
+
+
+--
+-- TOC entry 218 (class 1259 OID 27544)
+-- Dependencies: 13 215
+-- Name: sig_dop_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_dop_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3323 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: sig_dop_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_dop_id_seq OWNED BY sig_bumi.gid;
+
+
+--
+-- TOC entry 219 (class 1259 OID 27546)
+-- Dependencies: 1540 13
+-- Name: sig_kecamatan; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_kecamatan (
+    gid integer NOT NULL,
+    kd_propinsi character(2),
+    kd_dati2 character(2),
+    kd_kecamatan character(3),
+    nm_kecamatan character varying(50),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 220 (class 1259 OID 27552)
+-- Dependencies: 13 219
+-- Name: sig_kecamatan_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_kecamatan_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3324 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: sig_kecamatan_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_kecamatan_id_seq OWNED BY sig_kecamatan.gid;
+
+
+--
+-- TOC entry 221 (class 1259 OID 27554)
+-- Dependencies: 1540 13
+-- Name: sig_kelurahan; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_kelurahan (
+    gid integer NOT NULL,
+    kd_propinsi character(2),
+    kd_dati2 character(2),
+    kd_kecamatan character(3),
+    kd_kelurahan character(3),
+    nm_kelurahan character varying(50),
+    kd_sektor character varying(2),
+    kd_pos_kelurahan character varying(5),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 27560)
+-- Dependencies: 13 221
+-- Name: sig_kelurahan_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_kelurahan_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3325 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: sig_kelurahan_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_kelurahan_id_seq OWNED BY sig_kelurahan.gid;
+
+
+--
+-- TOC entry 223 (class 1259 OID 27562)
+-- Dependencies: 1540 13
+-- Name: sig_propinsi; Type: TABLE; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE TABLE sig_propinsi (
+    id integer NOT NULL,
+    kd_propinsi character(2),
+    nm_propinsi character varying(50),
+    geom public.geometry(Geometry,4326)
+);
+
+
+--
+-- TOC entry 224 (class 1259 OID 27568)
+-- Dependencies: 223 13
+-- Name: sig_propinsi_id_seq; Type: SEQUENCE; Schema: sig; Owner: -
+--
+
+CREATE SEQUENCE sig_propinsi_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- TOC entry 3326 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: sig_propinsi_id_seq; Type: SEQUENCE OWNED BY; Schema: sig; Owner: -
+--
+
+ALTER SEQUENCE sig_propinsi_id_seq OWNED BY sig_propinsi.id;
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3090 (class 2604 OID 27570)
+-- Dependencies: 201 200
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY groups ALTER COLUMN id SET DEFAULT nextval('groups_id_seq'::regclass);
+
+
+--
+-- TOC entry 3094 (class 2604 OID 27571)
+-- Dependencies: 205 204
+-- Name: resource_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY resources ALTER COLUMN resource_id SET DEFAULT nextval('resources_resource_id_seq'::regclass);
+
+
+--
+-- TOC entry 3098 (class 2604 OID 27572)
+-- Dependencies: 208 206
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+SET search_path = sig, pg_catalog;
+
+--
+-- TOC entry 3102 (class 2604 OID 27573)
+-- Dependencies: 214 213
+-- Name: gid; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_blok ALTER COLUMN gid SET DEFAULT nextval('sig_blok_id_seq'::regclass);
+
+
+--
+-- TOC entry 3101 (class 2604 OID 27574)
+-- Dependencies: 212 211
+-- Name: gid; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_bng ALTER COLUMN gid SET DEFAULT nextval('sig_bg_id_seq'::regclass);
+
+
+--
+-- TOC entry 3103 (class 2604 OID 27575)
+-- Dependencies: 218 215
+-- Name: gid; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_bumi ALTER COLUMN gid SET DEFAULT nextval('sig_dop_id_seq'::regclass);
+
+
+--
+-- TOC entry 3104 (class 2604 OID 27576)
+-- Dependencies: 217 216
+-- Name: id; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_dati2 ALTER COLUMN id SET DEFAULT nextval('sig_dati2_id_seq'::regclass);
+
+
+--
+-- TOC entry 3105 (class 2604 OID 27577)
+-- Dependencies: 220 219
+-- Name: gid; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_kecamatan ALTER COLUMN gid SET DEFAULT nextval('sig_kecamatan_id_seq'::regclass);
+
+
+--
+-- TOC entry 3106 (class 2604 OID 27578)
+-- Dependencies: 222 221
+-- Name: gid; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_kelurahan ALTER COLUMN gid SET DEFAULT nextval('sig_kelurahan_id_seq'::regclass);
+
+
+--
+-- TOC entry 3107 (class 2604 OID 27579)
+-- Dependencies: 224 223
+-- Name: id; Type: DEFAULT; Schema: sig; Owner: -
+--
+
+ALTER TABLE ONLY sig_propinsi ALTER COLUMN id SET DEFAULT nextval('sig_propinsi_id_seq'::regclass);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3076 (class 0 OID 26367)
+-- Dependencies: 170 3306
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY spatial_ref_sys  FROM stdin;
+\.
+
+
+SET search_path = topology, pg_catalog;
+
+--
+-- TOC entry 3074 (class 0 OID 27248)
+-- Dependencies: 183 3306
+-- Data for Name: topology; Type: TABLE DATA; Schema: topology; Owner: -
+--
+
+COPY topology  FROM stdin;
+\.
+
+
+--
+-- TOC entry 3075 (class 0 OID 27261)
+-- Dependencies: 184 3074 3306
+-- Data for Name: layer; Type: TABLE DATA; Schema: topology; Owner: -
+--
+
+COPY layer  FROM stdin;
+\.
+
+
+SET search_path = pbb, pg_catalog;
+
+--
+-- TOC entry 3109 (class 2606 OID 27581)
+-- Dependencies: 189 189 189 189 189 189 189 189 3307
+-- Name: dat_nilai_individu_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_nilai_individu
+    ADD CONSTRAINT dat_nilai_individu_pkey PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op);
+
+
+--
+-- TOC entry 3114 (class 2606 OID 27583)
+-- Dependencies: 190 190 190 190 190 190 190 3307
+-- Name: dat_nir_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_nir
+    ADD CONSTRAINT dat_nir_pkey PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_znt, thn_nir_znt);
+
+
+--
+-- TOC entry 3116 (class 2606 OID 27585)
+-- Dependencies: 191 191 191 191 191 191 191 191 3307
+-- Name: dat_objek_pajak_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_objek_pajak
+    ADD CONSTRAINT dat_objek_pajak_pkey PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op);
+
+
+--
+-- TOC entry 3118 (class 2606 OID 27587)
+-- Dependencies: 192 192 192 192 192 192 192 192 3307
+-- Name: dat_op_bangunan_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_op_bangunan
+    ADD CONSTRAINT dat_op_bangunan_pkey PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op);
+
+
+--
+-- TOC entry 3120 (class 2606 OID 27589)
+-- Dependencies: 193 193 193 193 193 193 193 193 3307
+-- Name: dat_op_bumi_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_op_bumi
+    ADD CONSTRAINT dat_op_bumi_pkey PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op);
+
+
+--
+-- TOC entry 3122 (class 2606 OID 27591)
+-- Dependencies: 194 194 3307
+-- Name: dat_subjek_pajak_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_subjek_pajak
+    ADD CONSTRAINT dat_subjek_pajak_pkey PRIMARY KEY (subjek_pajak_id);
+
+
+--
+-- TOC entry 3124 (class 2606 OID 27593)
+-- Dependencies: 195 195 195 195 195 195 3307
+-- Name: dat_znt_pkey; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY dat_znt
+    ADD CONSTRAINT dat_znt_pkey PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_znt);
+
+
+--
+-- TOC entry 3126 (class 2606 OID 27595)
+-- Dependencies: 196 196 196 196 196 196 196 196 196 3307
+-- Name: pk_e6; Type: CONSTRAINT; Schema: pbb; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sppt
+    ADD CONSTRAINT pk_e6 PRIMARY KEY (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op, thn_pajak_sppt);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3129 (class 2606 OID 27597)
+-- Dependencies: 199 199 199 199 3307
+-- Name: pk_external_identities; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY external_identities
+    ADD CONSTRAINT pk_external_identities PRIMARY KEY (external_id, local_user_name, provider_name);
+
+
+--
+-- TOC entry 3132 (class 2606 OID 27599)
+-- Dependencies: 200 200 3307
+-- Name: pk_groups; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT pk_groups PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3136 (class 2606 OID 27601)
+-- Dependencies: 202 202 202 3307
+-- Name: pk_groups_permissions; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY groups_permissions
+    ADD CONSTRAINT pk_groups_permissions PRIMARY KEY (group_id, perm_name);
+
+
+--
+-- TOC entry 3138 (class 2606 OID 27603)
+-- Dependencies: 203 203 203 203 3307
+-- Name: pk_groups_resources_permissions; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY groups_resources_permissions
+    ADD CONSTRAINT pk_groups_resources_permissions PRIMARY KEY (group_id, resource_id, perm_name);
+
+
+--
+-- TOC entry 3140 (class 2606 OID 27605)
+-- Dependencies: 204 204 3307
+-- Name: pk_resources; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY resources
+    ADD CONSTRAINT pk_resources PRIMARY KEY (resource_id);
+
+
+--
+-- TOC entry 3144 (class 2606 OID 27607)
+-- Dependencies: 206 206 3307
+-- Name: pk_users; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT pk_users PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3150 (class 2606 OID 27609)
+-- Dependencies: 207 207 207 3307
+-- Name: pk_users_groups; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users_groups
+    ADD CONSTRAINT pk_users_groups PRIMARY KEY (user_id, group_id);
+
+
+--
+-- TOC entry 3152 (class 2606 OID 27611)
+-- Dependencies: 209 209 209 3307
+-- Name: pk_users_permissions; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users_permissions
+    ADD CONSTRAINT pk_users_permissions PRIMARY KEY (user_id, perm_name);
+
+
+--
+-- TOC entry 3154 (class 2606 OID 27613)
+-- Dependencies: 210 210 210 210 3307
+-- Name: pk_users_resources_permissions; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users_resources_permissions
+    ADD CONSTRAINT pk_users_resources_permissions PRIMARY KEY (user_id, resource_id, perm_name);
+
+
+--
+-- TOC entry 3134 (class 2606 OID 27615)
+-- Dependencies: 200 200 3307
+-- Name: uq_groups_group_name; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY groups
+    ADD CONSTRAINT uq_groups_group_name UNIQUE (group_name);
+
+
+--
+-- TOC entry 3146 (class 2606 OID 27617)
+-- Dependencies: 206 206 3307
+-- Name: uq_users_email; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT uq_users_email UNIQUE (email);
+
+
+--
+-- TOC entry 3148 (class 2606 OID 27619)
+-- Dependencies: 206 206 3307
+-- Name: uq_users_user_name; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT uq_users_user_name UNIQUE (user_name);
+
+
+SET search_path = sig, pg_catalog;
+
+--
+-- TOC entry 3157 (class 2606 OID 27621)
+-- Dependencies: 211 211 3307
+-- Name: sig_bg_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_bng
+    ADD CONSTRAINT sig_bg_pkey PRIMARY KEY (gid);
+
+
+--
+-- TOC entry 3163 (class 2606 OID 32469)
+-- Dependencies: 213 213 213 213 213 213 3307
+-- Name: sig_blok_kd_propinsi_kd_dati2_kd_kecamatan_kd_kelurahan_kd__key; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_blok
+    ADD CONSTRAINT sig_blok_kd_propinsi_kd_dati2_kd_kecamatan_kd_kelurahan_kd__key UNIQUE (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok);
+
+
+--
+-- TOC entry 3165 (class 2606 OID 27623)
+-- Dependencies: 213 213 3307
+-- Name: sig_blok_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_blok
+    ADD CONSTRAINT sig_blok_pkey PRIMARY KEY (gid);
+
+
+--
+-- TOC entry 3160 (class 2606 OID 32471)
+-- Dependencies: 211 211 211 211 211 211 211 211 211 3307
+-- Name: sig_bng_kd_propinsi_kd_dati2_kd_kecamatan_kd_kelurahan_kd_b_key; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_bng
+    ADD CONSTRAINT sig_bng_kd_propinsi_kd_dati2_kd_kecamatan_kd_kelurahan_kd_b_key UNIQUE (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op, no_bng);
+
+
+--
+-- TOC entry 3169 (class 2606 OID 32424)
+-- Dependencies: 215 215 215 215 215 215 215 215 3307
+-- Name: sig_bumi_kd_propinsi_kd_dati2_kd_kecamatan_kd_kelurahan_kd__key; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_bumi
+    ADD CONSTRAINT sig_bumi_kd_propinsi_kd_dati2_kd_kecamatan_kd_kelurahan_kd__key UNIQUE (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op);
+
+
+--
+-- TOC entry 3173 (class 2606 OID 27625)
+-- Dependencies: 216 216 3307
+-- Name: sig_dati2_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_dati2
+    ADD CONSTRAINT sig_dati2_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3171 (class 2606 OID 27627)
+-- Dependencies: 215 215 3307
+-- Name: sig_dop_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_bumi
+    ADD CONSTRAINT sig_dop_pkey PRIMARY KEY (gid);
+
+
+--
+-- TOC entry 3175 (class 2606 OID 32465)
+-- Dependencies: 219 219 219 219 3307
+-- Name: sig_kecamatan_kd_propinsi_kd_dati2_kd_kecamatan_key; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_kecamatan
+    ADD CONSTRAINT sig_kecamatan_kd_propinsi_kd_dati2_kd_kecamatan_key UNIQUE (kd_propinsi, kd_dati2, kd_kecamatan);
+
+
+--
+-- TOC entry 3177 (class 2606 OID 27629)
+-- Dependencies: 219 219 3307
+-- Name: sig_kecamatan_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_kecamatan
+    ADD CONSTRAINT sig_kecamatan_pkey PRIMARY KEY (gid);
+
+
+--
+-- TOC entry 3179 (class 2606 OID 32467)
+-- Dependencies: 221 221 221 221 221 3307
+-- Name: sig_kelurahan_kd_propinsi_kd_dati2_kd_kecamatan_kd_keluraha_key; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_kelurahan
+    ADD CONSTRAINT sig_kelurahan_kd_propinsi_kd_dati2_kd_kecamatan_kd_keluraha_key UNIQUE (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan);
+
+
+--
+-- TOC entry 3181 (class 2606 OID 27631)
+-- Dependencies: 221 221 3307
+-- Name: sig_kelurahan_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_kelurahan
+    ADD CONSTRAINT sig_kelurahan_pkey PRIMARY KEY (gid);
+
+
+--
+-- TOC entry 3183 (class 2606 OID 27633)
+-- Dependencies: 223 223 3307
+-- Name: sig_propinsi_kd_propinsi_key; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_propinsi
+    ADD CONSTRAINT sig_propinsi_kd_propinsi_key UNIQUE (kd_propinsi);
+
+
+--
+-- TOC entry 3185 (class 2606 OID 27635)
+-- Dependencies: 223 223 3307
+-- Name: sig_propinsi_pkey; Type: CONSTRAINT; Schema: sig; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY sig_propinsi
+    ADD CONSTRAINT sig_propinsi_pkey PRIMARY KEY (id);
+
+
+SET search_path = pbb, pg_catalog;
+
+--
+-- TOC entry 3110 (class 1259 OID 27636)
+-- Dependencies: 190 190 190 190 190 190 3307
+-- Name: d2_1_ak; Type: INDEX; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX d2_1_ak ON dat_nir USING btree (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, thn_nir_znt DESC, kd_znt);
+
+
+--
+-- TOC entry 3111 (class 1259 OID 27637)
+-- Dependencies: 190 190 190 190 190 190 3307
+-- Name: d2_2_ak; Type: INDEX; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX d2_2_ak ON dat_nir USING btree (kd_znt, thn_nir_znt DESC, kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan);
+
+
+--
+-- TOC entry 3112 (class 1259 OID 27638)
+-- Dependencies: 190 190 190 190 190 190 3307
+-- Name: d2_3_ak; Type: INDEX; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX d2_3_ak ON dat_nir USING btree (thn_nir_znt DESC, kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_znt);
+
+
+--
+-- TOC entry 3127 (class 1259 OID 27639)
+-- Dependencies: 196 3307
+-- Name: sppt_utang; Type: INDEX; Schema: pbb; Owner: -; Tablespace: 
+--
+
+CREATE INDEX sppt_utang ON sppt USING btree (pbb_yg_harus_dibayar_sppt);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3130 (class 1259 OID 27640)
+-- Dependencies: 200 200 3307
+-- Name: ix_groups_uq_group_name_key; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX ix_groups_uq_group_name_key ON groups USING btree (lower((group_name)::text));
+
+
+--
+-- TOC entry 3141 (class 1259 OID 27641)
+-- Dependencies: 206 206 3307
+-- Name: ix_users_uq_lower_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX ix_users_uq_lower_email ON users USING btree (lower((email)::text));
+
+
+--
+-- TOC entry 3142 (class 1259 OID 27642)
+-- Dependencies: 206 206 3307
+-- Name: ix_users_ux_lower_username; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX ix_users_ux_lower_username ON users USING btree (lower((user_name)::text));
+
+
+SET search_path = sig, pg_catalog;
+
+--
+-- TOC entry 3155 (class 1259 OID 27643)
+-- Dependencies: 211 2604 3307
+-- Name: sig_bg_gdx; Type: INDEX; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE INDEX sig_bg_gdx ON sig_bng USING gist (geom);
+
+
+--
+-- TOC entry 3161 (class 1259 OID 27644)
+-- Dependencies: 2604 213 3307
+-- Name: sig_blok_gdx; Type: INDEX; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE INDEX sig_blok_gdx ON sig_blok USING gist (geom);
+
+
+--
+-- TOC entry 3158 (class 1259 OID 27645)
+-- Dependencies: 211 211 211 211 211 211 211 211 3307
+-- Name: sig_bng_ix; Type: INDEX; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE INDEX sig_bng_ix ON sig_bng USING btree (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op, no_bng);
+
+
+--
+-- TOC entry 3166 (class 1259 OID 27646)
+-- Dependencies: 215 2604 3307
+-- Name: sig_bumi_gdx; Type: INDEX; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE INDEX sig_bumi_gdx ON sig_bumi USING gist (geom);
+
+
+--
+-- TOC entry 3167 (class 1259 OID 27647)
+-- Dependencies: 215 215 215 215 215 215 215 3307
+-- Name: sig_bumi_ix; Type: INDEX; Schema: sig; Owner: -; Tablespace: 
+--
+
+CREATE INDEX sig_bumi_ix ON sig_bumi USING btree (kd_propinsi, kd_dati2, kd_kecamatan, kd_kelurahan, kd_blok, no_urut, kd_jns_op);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3186 (class 2606 OID 27648)
+-- Dependencies: 199 206 3147 3307
+-- Name: fk_external_identities_local_user_name_users; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY external_identities
+    ADD CONSTRAINT fk_external_identities_local_user_name_users FOREIGN KEY (local_user_name) REFERENCES users(user_name) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3187 (class 2606 OID 27653)
+-- Dependencies: 202 3131 200 3307
+-- Name: fk_groups_permissions_group_id_groups; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY groups_permissions
+    ADD CONSTRAINT fk_groups_permissions_group_id_groups FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3189 (class 2606 OID 27658)
+-- Dependencies: 203 200 3131 3307
+-- Name: fk_groups_resources_permissions_group_id_groups; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY groups_resources_permissions
+    ADD CONSTRAINT fk_groups_resources_permissions_group_id_groups FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3188 (class 2606 OID 27663)
+-- Dependencies: 204 203 3139 3307
+-- Name: fk_groups_resources_permissions_resource_id_resources; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY groups_resources_permissions
+    ADD CONSTRAINT fk_groups_resources_permissions_resource_id_resources FOREIGN KEY (resource_id) REFERENCES resources(resource_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3190 (class 2606 OID 27668)
+-- Dependencies: 3131 200 204 3307
+-- Name: fk_resources_owner_group_id_groups; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY resources
+    ADD CONSTRAINT fk_resources_owner_group_id_groups FOREIGN KEY (owner_group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- TOC entry 3191 (class 2606 OID 27673)
+-- Dependencies: 204 3143 206 3307
+-- Name: fk_resources_owner_user_id_users; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY resources
+    ADD CONSTRAINT fk_resources_owner_user_id_users FOREIGN KEY (owner_user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- TOC entry 3192 (class 2606 OID 27678)
+-- Dependencies: 3139 204 204 3307
+-- Name: fk_resources_parent_id_resources; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY resources
+    ADD CONSTRAINT fk_resources_parent_id_resources FOREIGN KEY (parent_id) REFERENCES resources(resource_id) ON UPDATE CASCADE ON DELETE SET NULL;
+
+
+--
+-- TOC entry 3193 (class 2606 OID 27683)
+-- Dependencies: 3131 200 207 3307
+-- Name: fk_users_groups_group_id_groups; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users_groups
+    ADD CONSTRAINT fk_users_groups_group_id_groups FOREIGN KEY (group_id) REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3194 (class 2606 OID 27688)
+-- Dependencies: 3143 206 207 3307
+-- Name: fk_users_groups_user_id_users; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users_groups
+    ADD CONSTRAINT fk_users_groups_user_id_users FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3195 (class 2606 OID 27693)
+-- Dependencies: 209 206 3143 3307
+-- Name: fk_users_permissions_user_id_users; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users_permissions
+    ADD CONSTRAINT fk_users_permissions_user_id_users FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3196 (class 2606 OID 27698)
+-- Dependencies: 3139 204 210 3307
+-- Name: fk_users_resources_permissions_resource_id_resources; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users_resources_permissions
+    ADD CONSTRAINT fk_users_resources_permissions_resource_id_resources FOREIGN KEY (resource_id) REFERENCES resources(resource_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3197 (class 2606 OID 27703)
+-- Dependencies: 210 3143 206 3307
+-- Name: fk_users_resources_permissions_user_id_users; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users_resources_permissions
+    ADD CONSTRAINT fk_users_resources_permissions_user_id_users FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3312 (class 0 OID 0)
+-- Dependencies: 14
+-- Name: public; Type: ACL; Schema: -; Owner: -
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2016-10-30 20:30:24
+
+--
+-- PostgreSQL database dump complete
+--
+

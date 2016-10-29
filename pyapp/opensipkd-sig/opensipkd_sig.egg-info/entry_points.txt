@@ -1,0 +1,5 @@
+      [paste.app_factory]
+      main = opensipkdsig:main
+      [console_scripts]
+      initialize_opensipkdsig_db = opensipkdsig.scripts.initializedb:main      
+      

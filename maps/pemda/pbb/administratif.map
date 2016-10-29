@@ -1,0 +1,175 @@
+#
+# File: lmic_wms.map
+# Reprojects a WMS service from native (UTM-15N) into Web Mercator
+# for integrating with multiple datasets.
+#
+
+MAP
+    SIZE 800 650
+    NAME administratif
+    #SIZE 100 50
+    STATUS ON
+    #EPSG 3857
+    #EXTENT 12074060 -832624 12097009 -815756
+    #EPSG 4326
+
+    INCLUDE "./inc/init_extent.inc" 
+    INCLUDE "./inc/debug.inc"
+    UNITS METERS
+
+    INCLUDE "../../geomoose_globals.map"
+    WEB
+        INCLUDE "../../temp_directory.map"
+        METADATA
+          'ows_title' 'Reprojection service for Administratif layers'
+          'ows_srs' 'EPSG:26915 EPSG:4326 EPSG:900913 EPSG:3857'
+          'ows_enable_request' '*'
+          'ows_onlineresource' 'http://www.opensipkd.com'
+          'wms_feature_info_mime_type' 'text/html'
+        END
+    END
+
+    PROJECTION
+        "init=epsg:4326"
+    END
+
+    LAYER
+        NAME kelurahan
+        INCLUDE "./inc/connection.inc"
+        DATA "geom from (select a.*, a.kd_kelurahan||' '||a.nm_kelurahan kelurahan 
+                         FROM sig.sig_kelurahan a) as drv using unique gid using srid=4326"
+        STATUS ON
+        TYPE POLYGON
+        LABELITEM 'kelurahan'
+        LABELCACHE ON
+        LABELMAXSCALE 30000
+        CLASS
+            NAME 'kelurahan'
+            STYLE
+              SIZE 2
+              COLOR -1 -1 -1
+              OUTLINECOLOR 255 0 0
+              MAXSCALEDENOM 60000
+            END
+            
+            LABEL
+              TYPE TRUETYPE
+              FONT vera_sans
+              SIZE 10
+              ANTIALIAS TRUE
+              COLOR 0 0 0
+              OUTLINECOLOR 255 0 0
+              BUFFER 4
+              MINFEATURESIZE auto
+              PARTIALS FALSE
+              POSITION cc
+            END            
+        END
+        METADATA
+            # drill-down identify service record.
+            'identify_record'	'templates/kelurahan_identify.html'
+
+            # query.php / "Search Parcels" functionality.
+            #'itemquery'	'templates/search_result.html'
+            #'itemquery-filter'	'/.*[qstring].*/i' 
+            #'qstring_validation_pattern' '.'
+            
+            # Feature reports are stored in the conf/feature_report directory.
+            #'feature_report' 'parcel.xml'
+
+            #'select_record'	'templates/select_result.html'
+            #'select_header' 'templates/select_header.html'
+            #'popups' 'parcels_popup.html'
+        END
+        TOLERANCE 0
+
+        # this is required for WMS popups.
+        #TEMPLATE "parcels_popup.html"
+
+    END
+
+    LAYER
+        NAME kecamatan
+        INCLUDE "./inc/connection.inc"
+        DATA "geom from (select a.*, a.kd_kecamatan||' '||a.nm_kecamatan kecamatan 
+                         FROM sig.sig_kecamatan a) as drv using unique gid using srid=4326"
+        STATUS ON
+        TYPE POLYGON
+        LABELITEM 'kecamatan'
+        LABELCACHE ON
+        LABELMAXSCALE 150000
+        CLASS
+            NAME 'kecamatan'
+            STYLE
+              SIZE 3
+              COLOR -1 -1 -1
+              OUTLINECOLOR 255 0 255
+              MAXSCALEDENOM 250000
+            END
+            
+            LABEL
+              TYPE TRUETYPE
+              FONT vera_sans
+              SIZE 12
+              ANTIALIAS TRUE
+              COLOR 0 0 0
+              OUTLINECOLOR 255 0 255
+              BUFFER 4
+              MINFEATURESIZE auto
+              PARTIALS FALSE
+              POSITION cc
+            END            
+        END
+
+        
+        METADATA
+            # drill-down identify service record.
+            'identify_record'	'templates/kecamatan_identify.html'
+
+            # query.php / "Search Parcels" functionality.
+            #'itemquery'	'templates/search_result.html'
+            #'itemquery-filter'	'/.*[qstring].*/i' 
+            #'qstring_validation_pattern' '.'
+            
+            # Feature reports are stored in the conf/feature_report directory.
+            #'feature_report' 'parcel.xml'
+
+            #'select_record'	'templates/select_result.html'
+            #'select_header' 'templates/select_header.html'
+            #'popups' 'parcels_popup.html'
+        END
+        TOLERANCE 0
+
+    END 
+    LAYER
+        NAME blok
+        INCLUDE "./inc/connection.inc"
+        DATA "geom from sig.sig_blok using unique gid using srid=4326"
+        STATUS ON
+        TYPE POLYGON
+        LABELITEM 'kd_blok'
+        LABELMAXSCALE 15000
+        CLASS
+            NAME 'blok'
+            STYLE
+              SIZE 1
+              COLOR -1 -1 -1
+              OUTLINECOLOR 0 0 255
+              MAXSCALEDENOM 30000
+            END
+            LABEL
+              TYPE TRUETYPE
+              FONT vera_sans
+              SIZE 8
+              ANTIALIAS TRUE
+              COLOR 0 0 0
+              OUTLINECOLOR 0 0 255
+              BUFFER 4
+              MINFEATURESIZE auto
+              PARTIALS FALSE
+              POSITION cc
+            END    
+        END
+    END  
+    
+END
